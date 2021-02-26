@@ -1,0 +1,8 @@
+* {
+    background-color: aquamarine;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 30%;
+}

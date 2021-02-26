@@ -1,10 +1,28 @@
 <!doctype html>
 <html>
 <head>
-    <title></title>
+    <title>Imageboard</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+    <h1>I "square" PIXELS</h1>
+    <h3>Latest Images</h3>
+    <div id="main">
+        <div class="grid-container">
+            <div 
+                class="card" 
+                id="c-1"
+                v-for="{img,explanation} in cardDeck" 
+                :key="id" @click="handleClick()"
+            >
+                <img :src="img" :alt="explanation" width="150px" height="150px">
+                <p>{{explanation}}</p>
+            </div>
+        </div>
+    </div>
     <script src="/js/vue.js"></script>
     <script src="/js/axios.min.js"></script>
+    <script src="/js/script.js"></script>
 </body>
 </html>
+
