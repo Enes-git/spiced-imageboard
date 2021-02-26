@@ -4,6 +4,7 @@ const app = express();
 app.use(express.static('public'));
 
 const cardDeck = [
+    // got this part completely wrong!!!
     {
         id: 1, // cannot get this for the ids of tags ??????
         //and constantly getting id error
