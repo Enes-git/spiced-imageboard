@@ -1,8 +1,18 @@
 * {
-    background-color: aquamarine;
+    /* background-color: aquamarine; */
 }
 
 .grid-container {
     display: grid;
-    grid-template-columns: 30%;
+    grid-template-columns: 30% 30% 30%;
+    gap: 3%;
+    justify-content: center;
+}
+.card {
+    padding: 2px;
+    border: 1px solid grey;
+}
+img {
+    width: 28.5vw;
+    height: 30vh;
 }
