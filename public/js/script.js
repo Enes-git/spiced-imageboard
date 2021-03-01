@@ -3,8 +3,6 @@ console.log('sanity :>> ');
 new Vue({
     el: '#main',
     data: {
-        name: 'NS',
-        seen: true,
         images: [],
         title: '',
         description: '',
@@ -19,10 +17,10 @@ new Vue({
             .get('/images')
             .then(function (response) {
                 console.log('response.data :>> ', response.data);
-                self.images = response.data;
+                self.images = response.data.reverse();
             })
             .catch(function (err) {
-                console.log('err in axios get /images :>> ', err);
+                console.log('err in get /images axios :>> ', err);
             });
     },
     methods: {
@@ -43,6 +41,7 @@ new Vue({
                 .post('/upload', formData)
                 .then(function (response) {
                     console.log('response from post req: ', response);
+                    self.images.unshift(response.data);
                 })
                 .catch(function (err) {
                     console.log('error from post req', err);
@@ -51,6 +50,7 @@ new Vue({
         handleChange: function (event) {
             console.log('handleChange is running');
             console.log('event.target.list :>> ', event.target.list);
+            self.file = event.target.files();
         },
     },
 });

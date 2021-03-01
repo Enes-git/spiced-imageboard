@@ -4,6 +4,8 @@ const db = require('./db');
 const multer = require('multer');
 const uidSafe = require('uid-safe');
 const path = require('path');
+const s3 = require('./s3');
+const { s3Url } = require('./config.json');
 
 // setting storage place and limitations
 const diskStorage = multer.diskStorage({
@@ -30,26 +32,38 @@ app.get('/images', (req, res) => {
     console.log('hit the get "/images" route!');
     db.getAllImageInfo()
         .then(({ rows }) => {
-            console.log('rows :>> ', rows);
+            // console.log('rows :>> ', rows);
             return res.json(rows);
         })
         .catch((err) => {
             console.log('err in getImages :>> ', err);
         });
 });
-app.post('/upload', uploader.single('file'), (req, res) => {
+app.post('/upload', uploader.single('file'), s3.upload, (req, res) => {
     console.log('hit the post route....');
     console.log('req.file: ', req.file);
     console.log('req.body: ', req.body);
-    if (req.file) {
-        res.json({
-            success: true,
+
+    const { title, username, description } = req.body;
+    const { filename } = re.file;
+
+    db.addNewImage(s3Url + filename, username, title, description)
+        .then(() => {
+            res.json(rows, {
+                title: title,
+                username: username,
+                description: description,
+                url: s3Url + filename,
+                success: true,
+            });
+        })
+        .catch((err) => {
+            console.log('err in route "/upload" addNewImage :>> ', err);
         });
-    } else {
-        res.json({
-            success: false,
-        });
-    }
+
+    res.json({
+        success: false,
+    });
 });
 app.listen(8080, () => console.log(`I'm all ears Imageboard Master!`));
 

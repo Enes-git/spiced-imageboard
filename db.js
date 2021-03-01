@@ -8,4 +8,12 @@ module.exports.getAllImageInfo = () => {
     return db.query(q);
 };
 
-//
+// adding new image
+module.exports.addNewImage = () => {
+    const q = `
+    INSERT INTO images (url,username,title,description)
+    VALUES ($1,$2,$3,$4)
+    RETURNING id`;
+    const params = [url, username, title, description];
+    return db.query(q, params);
+};
