@@ -16,7 +16,7 @@ const s3 = new aws.S3({
 module.exports.upload = (req, res, next) => {
     // checking if multer failed
     if (!req.file) {
-        console.log('multer fail');
+        console.log('req.file does not exist - multer fail');
         return res.sendStatus(500);
     }
 
@@ -34,11 +34,11 @@ module.exports.upload = (req, res, next) => {
         .then(function () {
             next();
 
-            // if you wanna delete
+            // if you wanna delete it from uploads folder
             // fs.unlink(path, () => {});
         })
         .catch(function (err) {
-            console.log(err);
+            console.log('err in s3.putObject (upload)', err);
             res.sendStatus(500);
         });
 };

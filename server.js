@@ -5,7 +5,7 @@ const multer = require('multer');
 const uidSafe = require('uid-safe');
 const path = require('path');
 const s3 = require('./s3');
-const { s3Url } = require('./config.json');
+const { s3Url } = require('./config');
 
 // setting storage place and limitations
 const diskStorage = multer.diskStorage({
@@ -41,19 +41,20 @@ app.get('/images', (req, res) => {
 });
 app.post('/upload', uploader.single('file'), s3.upload, (req, res) => {
     console.log('hit the post route....');
-    console.log('req.file: ', req.file);
-    console.log('req.body: ', req.body);
+    console.log('req.file :>> ', req.file);
+    console.log('req.body :>> ', req.body);
 
     const { title, username, description } = req.body;
-    const { filename } = re.file;
+    const { filename } = req.file;
+    let url = s3Url + filename;
 
-    db.addNewImage(s3Url + filename, username, title, description)
+    db.addNewImage(url, username, title, description)
         .then(() => {
             res.json(rows, {
                 title: title,
                 username: username,
                 description: description,
-                url: s3Url + filename,
+                url: url,
                 success: true,
             });
         })
