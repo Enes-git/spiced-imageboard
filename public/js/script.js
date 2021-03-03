@@ -1,6 +1,7 @@
 (function () {
     console.log('sanity :>> ');
 
+    // selected image
     Vue.component('img-details-component', {
         template: '#img-details-temlate',
         data: function () {
@@ -35,7 +36,7 @@
                     self.username = username;
                 })
                 .catch((err) => {
-                    console.log('err in GET img_details route :>> ', err);
+                    console.log('err in GET/img_details route :>> ', err);
                 });
         },
         methods: {
@@ -45,6 +46,51 @@
         },
     });
 
+    // comments
+    Vue.component('img-comments-component', {
+        template: '#img-comments-temlate',
+        data: function () {
+            return {
+                comments: [],
+                username: '',
+                comment: '',
+                created_at: '',
+            };
+        },
+        props: ['imageId'],
+        mounted: function () {
+            var self = this;
+            axios
+                .get('/comments/' + this.imageId)
+                .then(function (response) {
+                    console.log('response.data :>> ', response.data);
+                    self.comments = response.data;
+                })
+                .catch((err) => {
+                    console.log('err in GET/comments request :>> ', err);
+                });
+        },
+        methods: {
+            postComment: function () {
+                var self = this;
+                var commentData = {
+                    comment: this.comment,
+                    username: this.username,
+                    image_id: this.imageId,
+                };
+                axios
+                    .post('/post_comment', commentData)
+                    .then(function (response) {
+                        self.comments.unshift(response.data);
+                    })
+                    .catch((err) => {
+                        console.log('err in /post_comment request :>> ', err);
+                    });
+            },
+        },
+    });
+
+    // main Vue
     new Vue({
         el: '#main',
         data: {

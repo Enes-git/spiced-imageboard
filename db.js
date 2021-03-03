@@ -28,3 +28,23 @@ module.exports.getSelectedImage = (id) => {
     const params = [id];
     return db.query(q, params);
 };
+
+// getting img comments
+module.exports.getComments = (id) => {
+    const q = `
+    SELECT * FROM comments
+    WHERE image_id = ($1)
+    ORDER BY id DESC`;
+    const params = [id];
+    return db.query(q, params);
+};
+
+// adding new comment
+module.exports.postComment = (username, comment, image_id) => {
+    const q = `
+    INSERT INTO comments
+    VALUES ($1,$2,$3)
+    RETURNING *`;
+    const params = [username, commetn, image_id];
+    return db.query(q, params);
+};

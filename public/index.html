@@ -20,7 +20,11 @@
         <img-details-component 
             v-if="selectedImage" v-bind:image-id="selectedImage" @close="closeImage">
         </img-details-component>
-        <!-- end component -->
+        <!-- end img component -->
+
+        <!-- comments component -->
+        <img-comments-component v-if="selectedImage" v-bind:image-id="selectedImage" @close="closeImage"></img-comments-component>
+        <!-- end comments component -->
         
         <h3>Latest Images</h3>
         <div class="grid-container">
@@ -36,7 +40,7 @@
         </div>
     </div>
     
-    <!-- component template -->
+    <!-- img component template -->
     <script id="img-details-temlate" type="text/x-template">
         <div class="component-wrapper">
             <div class="img-body">
@@ -48,7 +52,48 @@
             <p @click="closeDetails">CLOSE</p>
         </div>
     </script>
-    <!-- end template -->
+    <!-- end img component template -->
+
+    <!-- comments component template -->
+    <script id="img-comments-temlate" type="text/x-template">
+        <div class="component-wrapper">
+            <div class="add-comment">
+                <input 
+                    type="text" 
+                    name="username" 
+                    v-model="username" 
+                    placeholder="Username" 
+                    autocomplete="on"
+                    required
+                >
+                <!-- <input 
+                    type="text"
+                    name="comment" 
+                    v-model="comment" 
+                    placeholder="Tell us what you think." 
+                    autocomplete="on"
+                    required
+                > -->
+                <textarea 
+                    name="comment" 
+                    id="comment" 
+                    cols="50" 
+                    rows="10"
+                    v-model="comment" 
+                    placeholder="Tell us what you think." 
+                    autocomplete="on"
+                    required
+                >
+                </textarea>
+                <button @click="postComment">Post Comment</button>
+            </div>
+            <div class="past-comments" v-for="{comment, username} in comments">
+                <p>{{comment}}</p>
+                <p>{{username}} | {{created_at}}</p>
+            </div>
+        </div>
+    </script>
+    <!-- end comments component template -->
 
     <script src="/js/vue.js"></script>
     <script src="/js/axios.min.js"></script>

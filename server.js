@@ -72,7 +72,31 @@ app.get('/images/img_detail/:id', (req, res) => {
             res.json(rows);
         })
         .catch((err) => {
-            console.log('err in img_detail route :>> ', err);
+            console.log(
+                'err in db.getSelectedImage /img_detail route :>> ',
+                err
+            );
+        });
+});
+app.get('/comments/:id', (req, res) => {
+    // console.log('req.params :>> ', req.params);
+    const requestedId = req.params.id;
+    db.getComments(requestedId)
+        .then(({ rows }) => {
+            res.json(rows);
+        })
+        .catch((err) => {
+            console.log('err in db.getComments /comments route :>> ', err);
+        });
+});
+app.post('/post_comment', (req, res) => {
+    const { username, comment, image_id } = req.body;
+    db.postComment(username, comment, image_id)
+        .then(({ rows }) => {
+            console.log('rows :>> ', rows);
+        })
+        .catch((err) => {
+            console.log('err in db.postComment /post_comment :>> ', err);
         });
 });
 app.listen(8080, () => console.log(`I'm all ears Imageboard Master!`));
