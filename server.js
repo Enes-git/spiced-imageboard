@@ -22,7 +22,7 @@ const diskStorage = multer.diskStorage({
 const uploader = multer({
     storage: diskStorage,
     limits: {
-        fileSize: 2097152,
+        fileSize: 4097152,
     },
 });
 
@@ -50,21 +50,30 @@ app.post('/upload', uploader.single('file'), s3.upload, (req, res) => {
 
     db.addNewImage(url, username, title, description)
         .then(() => {
-            res.json(rows, {
+            res.json({
                 title: title,
                 username: username,
                 description: description,
                 url: url,
-                success: true,
+                success: true, // no need this
             });
         })
         .catch((err) => {
             console.log('err in route "/upload" addNewImage :>> ', err);
+            res.json({
+                success: false,
+            });
         });
-
-    res.json({
-        success: false,
-    });
+});
+app.get('/images/img_detail/:id', (req, res) => {
+    const requestedId = req.params.id;
+    db.getSelectedImage(requestedId)
+        .then(({ rows }) => {
+            res.json(rows);
+        })
+        .catch((err) => {
+            console.log('err in img_detail route :>> ', err);
+        });
 });
 app.listen(8080, () => console.log(`I'm all ears Imageboard Master!`));
 

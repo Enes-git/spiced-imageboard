@@ -15,19 +15,41 @@
             <input @change="handleChange" type="file" name="file" accept="image/*">
             <button @click.prevent="handleClick">Upload</button>
         </form>
+
+        <!-- img componenet -->
+        <img-details-component 
+            v-if="selectedImage" v-bind:image-id="selectedImage" @close="closeImage">
+        </img-details-component>
+        <!-- end component -->
+        
         <h3>Latest Images</h3>
         <div class="grid-container">
             <div 
                 class="card" 
-                id="c-1"
                 v-for="{id,url,title,description} in images" 
-                :key="id" @click="handleClick()"
+                :key="id" 
+                @click="openImage(id)"
             >
                 <img :src="url" :alt="description">
                 <p>{{title}}</p>
             </div>
         </div>
     </div>
+    
+    <!-- component template -->
+    <script id="img-details-temlate" type="text/x-template">
+        <div class="component-wrapper">
+            <div class="img-body">
+                <img :src="url" :alt="title">
+                <p>Title: {{title}}</p>
+                <p>Description: {{description}}</p>
+                <p>Uploaded By: {{username}}</p>
+            </div>
+            <p @click="closeDetails">CLOSE</p>
+        </div>
+    </script>
+    <!-- end template -->
+
     <script src="/js/vue.js"></script>
     <script src="/js/axios.min.js"></script>
     <script src="/js/script.js"></script>
