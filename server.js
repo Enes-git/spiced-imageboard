@@ -27,6 +27,7 @@ const uploader = multer({
 });
 
 app.use(express.static('public'));
+app.use(express.json());
 
 app.get('/images', (req, res) => {
     console.log('hit the get "/images" route!');
@@ -78,6 +79,16 @@ app.get('/images/img_detail/:id', (req, res) => {
             );
         });
 });
+app.get('/more/:lowestId', (req, res) => {
+    const lowestId = req.params.lowestId;
+    db.getMoreImages(lowestId)
+        .then(({ rows }) => {
+            res.json(rows);
+        })
+        .catch((err) => {
+            console.log('err in db.getMoreImages /more route :>> ', err);
+        });
+});
 app.get('/comments/:id', (req, res) => {
     // console.log('req.params :>> ', req.params);
     const requestedId = req.params.id;
@@ -92,8 +103,9 @@ app.get('/comments/:id', (req, res) => {
 app.post('/post_comment', (req, res) => {
     const { username, comment, image_id } = req.body;
     db.postComment(username, comment, image_id)
-        .then(({ rows }) => {
-            console.log('rows :>> ', rows);
+        .then((response) => {
+            // console.log('rows :>> ', rows);
+            res.json(response);
         })
         .catch((err) => {
             console.log('err in db.postComment /post_comment :>> ', err);

@@ -6,7 +6,7 @@ module.exports.getAllImageInfo = () => {
     const q = `
     SELECT * FROM images
     ORDER BY id DESC
-    LIMIT 10`;
+    LIMIT 3`;
     return db.query(q);
 };
 
@@ -29,6 +29,21 @@ module.exports.getSelectedImage = (id) => {
     return db.query(q, params);
 };
 
+// getting more images
+module.exports.getMoreImages = (id) => {
+    const q = `
+    SELECT id, url, title, (
+        SELECT id FROM images
+        ORDER BY id ASC
+        LIMIT 1
+    ) AS "lowestId" FROM images
+    WHERE id < ($1)
+    ORDER BY id DESC
+    LIMIT 3`;
+    const params = [id];
+    return db.query(q, params);
+};
+
 // getting img comments
 module.exports.getComments = (id) => {
     const q = `
@@ -42,9 +57,9 @@ module.exports.getComments = (id) => {
 // adding new comment
 module.exports.postComment = (username, comment, image_id) => {
     const q = `
-    INSERT INTO comments
+    INSERT INTO comments (username, comment, image_id)
     VALUES ($1,$2,$3)
-    RETURNING *`;
-    const params = [username, commetn, image_id];
+    RETURNING *`; // will return new added comment
+    const params = [username, comment, image_id];
     return db.query(q, params);
 };

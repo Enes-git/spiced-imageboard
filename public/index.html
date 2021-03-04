@@ -9,47 +9,79 @@
     <h3>Add An Image Now!</h3>
     <div id="main">
         <form>
-            <input v-model="title" type="text" name="title" placeholder="title">
-            <input v-model="description" type="text" name="description" placeholder="description">
-            <input v-model="username" type="text" name="username" placeholder="username">
-            <input @change="handleChange" type="file" name="file" accept="image/*">
+            <input 
+                v-model="title" 
+                type="text" 
+                name="title" 
+                placeholder="title"
+            >
+            <input 
+                v-model="description" 
+                type="text" 
+                name="description" 
+                placeholder="description"
+            >
+            <input 
+                v-model="username" 
+                type="text" 
+                name="username" 
+                placeholder="username"
+            >
+            <input 
+                @change="handleChange" 
+                type="file" 
+                name="file" 
+                accept="image/*"
+            >
             <button @click.prevent="handleClick">Upload</button>
         </form>
 
         <!-- img componenet -->
         <img-details-component 
-            v-if="selectedImage" v-bind:image-id="selectedImage" @close="closeImage">
+            v-if="imageId" 
+            :image-id="imageId" 
+            @close="closeImage"
+        >
         </img-details-component>
         <!-- end img component -->
 
-        <!-- comments component -->
-        <img-comments-component v-if="selectedImage" v-bind:image-id="selectedImage" @close="closeImage"></img-comments-component>
-        <!-- end comments component -->
-        
         <h3>Latest Images</h3>
         <div class="grid-container">
             <div 
-                class="card" 
-                v-for="{id,url,title,description} in images" 
-                :key="id" 
-                @click="openImage(id)"
-            >
+            class="card" 
+            v-for="{id,url,title,description} in images" 
+            :key="id" 
+        >
+            <a :href="'#'+id">
                 <img :src="url" :alt="description">
                 <p>{{title}}</p>
-            </div>
+            </a>
         </div>
+
+        <!-- more button -->
+        <button v-if="!gotNoMore" @click="getMoreImage"></button>
     </div>
-    
-    <!-- img component template -->
-    <script id="img-details-temlate" type="text/x-template">
-        <div class="component-wrapper">
-            <div class="img-body">
-                <img :src="url" :alt="title">
-                <p>Title: {{title}}</p>
-                <p>Description: {{description}}</p>
-                <p>Uploaded By: {{username}}</p>
-            </div>
-            <p @click="closeDetails">CLOSE</p>
+</div>
+
+<!-- img component template -->
+<script id="img-details-temlate" type="text/x-template">
+    <div class="component-wrapper">
+        <div class="img-body">
+            <img :src="url" :alt="title">
+            <p>Title: {{title}}</p>
+            <p>Description: {{description}}</p>
+            <p>Uploaded By: {{username}}</p>
+
+            <!-- comments component -->
+            <img-comments-component 
+                v-if="imageId" 
+                v-bind:image-id="imageId" 
+                @close="closeImage"
+            >
+            </img-comments-component>
+            <!-- end comments component -->
+        </div>
+            <p @click="closeImage">CLOSE</p>
         </div>
     </script>
     <!-- end img component template -->
@@ -87,9 +119,11 @@
                 </textarea>
                 <button @click="postComment">Post Comment</button>
             </div>
-            <div class="past-comments" v-for="{comment, username} in comments">
+            <h4>Latest Comments</h4>
+            <div class="past-comments" v-for="{comment, username, created_at} in comments">
                 <p>{{comment}}</p>
-                <p>{{username}} | {{created_at}}</p>
+                <p>By {{username}}</p>
+                <p>{{created_at}}</p>
             </div>
         </div>
     </script>

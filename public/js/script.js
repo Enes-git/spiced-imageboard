@@ -10,6 +10,7 @@
                 title: '',
                 description: '',
                 username: '',
+                created_at: '',
             };
         },
         props: ['imageId'],
@@ -29,18 +30,45 @@
                         title,
                         description,
                         username,
+                        created_at,
                     } = response.data[0];
                     self.url = url;
                     self.title = title;
                     self.description = description;
                     self.username = username;
+                    self.created_at = created_at;
                 })
                 .catch((err) => {
                     console.log('err in GET/img_details route :>> ', err);
                 });
         },
+        watch: {
+            imageId: function () {
+                var self = this;
+                axios
+                    .get('/images/img_detail/' + this.imageId)
+                    .then(function (response) {
+                        const {
+                            url,
+                            title,
+                            description,
+                            username,
+                            created_at,
+                        } = response.data[0];
+                        self.url = url;
+                        self.title = title;
+                        self.description = description;
+                        self.username = username;
+                        self.created_at = created_at;
+                    })
+                    .catch((err) => {
+                        console.log('err in GET/commetns - watch :>> ', err);
+                        self.$emit('close');
+                    });
+            },
+        },
         methods: {
-            closeDetails: function () {
+            closeImage: function () {
                 this.$emit('close');
             },
         },
@@ -54,7 +82,6 @@
                 comments: [],
                 username: '',
                 comment: '',
-                created_at: '',
             };
         },
         props: ['imageId'],
@@ -63,12 +90,25 @@
             axios
                 .get('/comments/' + this.imageId)
                 .then(function (response) {
-                    console.log('response.data :>> ', response.data);
+                    // console.log('response.data :>> ', response.data);
                     self.comments = response.data;
                 })
                 .catch((err) => {
                     console.log('err in GET/comments request :>> ', err);
                 });
+        },
+        watch: {
+            imageId: function () {
+                var self = this;
+                axios
+                    .get('/comments/' + this.imageId)
+                    .then(function (response) {
+                        self.comments = response.data;
+                    })
+                    .catch((err) => {
+                        console.log('err in GET/comments - watch :>> ', err);
+                    });
+            },
         },
         methods: {
             postComment: function () {
@@ -99,10 +139,11 @@
             description: '',
             username: '',
             file: null,
-            selectedImage: null,
+            imageId: location.hash.slice(1),
+            gotNoMore: null,
         },
         mounted: function () {
-            // to overcoming "this" problem
+            // to overcoming "this" problem in scope change
             var self = this;
 
             axios
@@ -114,6 +155,9 @@
                 .catch(function (err) {
                     console.log('err in get /images axios :>> ', err);
                 });
+            window.addEventListener('hashchange', function () {
+                self.imageId = location.hash.slice(1);
+            });
         },
         methods: {
             handleClick: function () {
@@ -133,7 +177,7 @@
                 axios
                     .post('/upload', formData)
                     .then(function (response) {
-                        console.log('response from post req: ', response);
+                        // console.log('response from post req: ', response);
                         self.images.unshift(response.data);
                     })
                     .catch(function (err) {
@@ -141,16 +185,39 @@
                     });
             },
             handleChange: function (event) {
-                console.log('handleChange is running');
+                // console.log('handleChange is running');
                 // console.log('event.target.files[0] :>> ', event.target.files[0]);
                 this.file = event.target.files[0];
             },
             openImage: function (id) {
                 // console.log('clicked image with id :>> ', id);
-                this.selectedImage = id;
+                this.imageId = id;
             },
             closeImage: function () {
-                this.selectedImage = null;
+                this.imageId = null;
+                location.hash = '';
+            },
+            getMoreImage: function () {
+                var lowestId = this.images[this.images.length - 1].id;
+                // console.log('lastImage :>> ', lastImage);
+                var self = this;
+                axios
+                    .get('/more/' + lowestId)
+                    .then((response) => {
+                        // console.log('response :>> ', response);
+                        for (let i = 0; i < response.data.length; i++) {
+                            self.images.push(response.data[i]);
+                        }
+                        if (
+                            self.images[self.images.length - 1].id ==
+                            response.data[0].lowestId
+                        ) {
+                            self.gotNoMore = true;
+                        }
+                    })
+                    .catch((err) => {
+                        console.log('err in /more request :>> ', err);
+                    });
             },
         },
     });
